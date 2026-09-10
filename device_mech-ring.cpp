@@ -17,8 +17,7 @@
 
 DPDR GoToTaskAfterStepRing = Idle_task;
 
-CLASS_DEVICE_RINGMECH device_mech_ring(false);
-CLASS_DEVICE_RINGMECH::CLASS_DEVICE_RINGMECH(bool _in) { dumb = _in; }
+CLASS_DEVICE_RINGMECH device_mech_ring;
 void CLASS_DEVICE_RINGMECH::setFs(fs::LittleFSFS* fs)  {   _fs = fs;   }
 volatile uint16_t step_time = RINGMECH_SPEED_DEFAULT;
 
@@ -346,27 +345,28 @@ void CLASS_DEVICE_RINGMECH::MechInitGPIOs() {
 // ============================================================
 void CLASS_DEVICE_RINGMECH::MechMoveStepDown() {
     digitalWrite(RINGMECH_STEP, HIGH);
+    uint32_t stepDelayMs = step_time;
 
     // Проверка занятости ядра: если предыдущий цикл шага (HIGH->LOW->задача)
     // занял заметно больше штатного времени — планировщик/таймеры задерживались
     // (сеть, веб, чтение FS). Тогда следующую фазу откладываем, механизм
     // «встаёт» на паузу; логика при этом не меняется.
-    bool coreBusy = false;
-    if (_lastStepDownUs != 0) {
-        uint32_t gapMs = (micros() - _lastStepDownUs) / 1000UL;
-        if ((gapMs > RINGMECH_STEP_GAP_BUSY_MS) && (gapMs < RINGMECH_STEP_GAP_RESET_MS)) {
-            coreBusy = true;
-        }
-    }
-    uint32_t stepDelayMs = step_time;
-    if (coreBusy) {
-        // Пауза из-за занятости ядра. Сбрасываем базу отсчёта: собственная
-        // пауза не должна восприниматься как новая занятость на следующем шаге.
-        stepDelayMs = RINGMECH_STEP_BUSY_MS;
-        _lastStepDownUs = 0;
-    } else {
-        _lastStepDownUs = micros();
-    }
+    // bool coreBusy = false;
+    // if (_lastStepDownUs != 0) {
+    //     uint32_t gapMs = (micros() - _lastStepDownUs) / 1000UL;
+    //     if ((gapMs > RINGMECH_STEP_GAP_BUSY_MS) && (gapMs < RINGMECH_STEP_GAP_RESET_MS)) {
+    //         coreBusy = true;
+    //     }
+    // }
+    // if (coreBusy) {
+    //     // Пауза из-за занятости ядра. Сбрасываем базу отсчёта: собственная
+    //     // пауза не должна восприниматься как новая занятость на следующем шаге.
+    //     stepDelayMs = RINGMECH_STEP_BUSY_MS;
+    //     _lastStepDownUs = 0;
+    // } 
+    // else {
+    //     _lastStepDownUs = micros();
+    // }
     SetTimerTask(MechMoveStepUp, stepDelayMs);
 }
 void CLASS_DEVICE_RINGMECH::MechMoveStepUp() {

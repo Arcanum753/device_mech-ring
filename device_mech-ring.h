@@ -80,7 +80,6 @@ typedef struct {
 
 class CLASS_DEVICE_RINGMECH {
 public:
-    CLASS_DEVICE_RINGMECH(bool _in);
     void setFs(fs::LittleFSFS* fs);
     void begin();
     void begin(ModContext& ctx);
@@ -151,7 +150,6 @@ private:
     static void RingPollTask();
 
 protected:
-    bool dumb;
     fs::LittleFSFS*     _fs;
     strRingMechConfig   _config;
     uint16_t            _mechControlSteps;
