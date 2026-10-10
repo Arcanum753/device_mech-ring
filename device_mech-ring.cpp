@@ -84,7 +84,6 @@ void CLASS_DEVICE_RINGMECH::handleInfo_ring(AsyncWebServerRequest *request) {
     doc["firstPosition"]        = _config.firstPosition;
     doc["time_begin"]           = _config.time_begin;
     doc["time_end"]             = _config.time_end;
-    doc["timeSource"]           = _config.timeSource;
     doc["status"]               = _ringStatus;
     doc["mechControlSteps"]     = _mechControlSteps;
     doc["turnCount"]            = _mechTurnTarget;
@@ -127,7 +126,6 @@ void CLASS_DEVICE_RINGMECH::handleSave(AsyncWebServerRequest *request) {
                 if (_config.time_begin == 0 && v == 0) { _config.time_end = 0; }
                 else if (v >= _config.time_begin) _config.time_end = v;
             }
-            else if (name == "timeSource")          { _config.timeSource = val; }
         }
         saveConfig();
         request->send(200, "text/plain", "OK");
@@ -147,7 +145,6 @@ void CLASS_DEVICE_RINGMECH::defaultConfig() {
     _config.firstPosition       = RINGMECH_FIRST_POSITION_DEFAULT;
     _config.time_begin          = RINGMECH_TIME_BEGIN_DEFAULT;
     _config.time_end            = RINGMECH_TIME_END_DEFAULT;
-    _config.timeSource          = "ds3231";
 }
 
 bool CLASS_DEVICE_RINGMECH::loadConfig() {
@@ -164,9 +161,7 @@ bool CLASS_DEVICE_RINGMECH::loadConfig() {
     _config.firstPosition       = doc["firstPosition"].as<uint8_t>();
     _config.time_begin           = doc["time_begin"].as<uint8_t>();
     _config.time_end             = doc["time_end"].as<uint8_t>();
-    _config.timeSource           = doc["timeSource"].as<String>();
 
-    if (_config.timeSource != "ds3231" && _config.timeSource != "ntp") { _config.timeSource = "ds3231"; }
     if (_config.time_begin > 23) _config.time_begin = RINGMECH_TIME_BEGIN_DEFAULT;
     if (_config.time_end   > 23) _config.time_end   = RINGMECH_TIME_END_DEFAULT;
     if (_config.time_begin > _config.time_end && !(_config.time_begin == 0 && _config.time_end == 0)) { _config.time_begin = RINGMECH_TIME_BEGIN_DEFAULT; _config.time_end = RINGMECH_TIME_END_DEFAULT; }
@@ -192,7 +187,6 @@ bool CLASS_DEVICE_RINGMECH::saveConfig() {
     doc["firstPosition"]        = _config.firstPosition;
     doc["time_begin"]           = _config.time_begin;
     doc["time_end"]             = _config.time_end;
-    doc["timeSource"]           = _config.timeSource;
     return core_json.jsonFileSaveDoc(CONFIG_FILE_RINGMECH, doc);
 }
 
@@ -225,5 +219,4 @@ void ringMechTerminalRegister() {
     term.addCommand("r-save",  CLASS_DEVICE_RINGMECH::cmdSave);
     term.addCommand("r-trn",   CLASS_DEVICE_RINGMECH::cmdTurn);
     term.addCommand("r-time",  CLASS_DEVICE_RINGMECH::cmdTime);
-    term.addCommand("r-src",   CLASS_DEVICE_RINGMECH::cmdSource);
 }

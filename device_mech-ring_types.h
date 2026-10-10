@@ -63,7 +63,6 @@ typedef struct {
     uint8_t firstPosition;
     uint8_t time_begin;
     uint8_t time_end;
-    String   timeSource;
 } strRingMechConfig;
 
 #endif // _DEVICE_MECH_RING_TYPES_h

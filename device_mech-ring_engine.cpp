@@ -4,6 +4,7 @@
 
 #include "device_mech-ring.h"
 #include "core_sys/eertos.h"
+#include "core_sys/core_sys.h"
 
 #include "core_terminal/core_terminal.h"
 #include "core_terminal/ErriezSerialTerminal.h"
@@ -38,14 +39,8 @@ void CLASS_DEVICE_RINGMECH::ledMacrosRingMechError() {
 // Время из источника
 // ============================================================
 time_t CLASS_DEVICE_RINGMECH::getCurrentTime() {
-#if defined(MODULE_DS3231)
-    if (_config.timeSource == "ds3231") {
-        time_t t = module_ds3231.getTime();
-        if (t > 0) { return t; }
-        DEBUGRINGMECH("DS3231 error, fallback to NTP\r\n");
-    }
-#endif
-    return now();
+    // Единый источник времени — подсистема виртуального времени core_sys.
+    return core_sys.timeNow();
 }
 
 // ============================================================
@@ -351,7 +346,6 @@ void CLASS_DEVICE_RINGMECH::cmdStatus() {
     DBG_MOD("[D_CLOCKRING] ", "_config.firstPosition: %d\r\n",      device_mech_ring._config.firstPosition);
     DBG_MOD("[D_CLOCKRING] ", "_config.time_begin:    %d\r\n",      device_mech_ring._config.time_begin);
     DBG_MOD("[D_CLOCKRING] ", "_config.time_end:      %d\r\n",      device_mech_ring._config.time_end);
-    DBG_MOD("[D_CLOCKRING] ", "_config.timeSource:    %s\r\n",      device_mech_ring._config.timeSource.c_str());
     DBG_MOD("[D_CLOCKRING] ", "_mechControlSteps:     %d\r\n",      device_mech_ring._mechControlSteps);
     DBG_MOD("[D_CLOCKRING] ", "_mechTurnTarget:       %d\r\n",      device_mech_ring._mechTurnTarget);
     DBG_MOD("[D_CLOCKRING] ", "_sensorState:          %d\r\n",      device_mech_ring._sensorState);
@@ -384,21 +378,6 @@ void CLASS_DEVICE_RINGMECH::cmdTime() {
     device_mech_ring._config.time_begin = b;
     device_mech_ring._config.time_end   = e;
     DBG_MOD("[D_CLOCKRING] ", "OK\r\n");
-}
-
-void CLASS_DEVICE_RINGMECH::cmdSource() {
-    char *arg = term.getNext();
-    if (arg == NULL) {
-        DBG_MOD("[D_CLOCKRING] ", "timeSource=%s\r\n", device_mech_ring._config.timeSource.c_str());
-        return;
-    }
-    String s(arg);
-    if (s == "ds3231" || s == "ntp") {
-        device_mech_ring._config.timeSource = s;
-        DBG_MOD("[D_CLOCKRING] ", "OK\r\n");
-    } else {
-        DBG_MOD("[D_CLOCKRING] ", "Usage: r-src [ds3231|ntp]\r\n");
-    }
 }
 
 // ============================================================

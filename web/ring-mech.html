@@ -3,6 +3,7 @@
 <head>
     <title>Ring mechanism</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,15 +13,6 @@
     <div class="content" style="text-align: center;">
         <table class="scan" style="width: auto; margin: 0 auto;">
             <tr><th colspan="2">Настройки / Settings</th></tr>
-            <tr>
-                <td class="label">Time source</td>
-                <td>
-                    <select id="timeSource">
-                        <option value="ds3231">DS3231</option>
-                        <option value="ntp">NTP</option>
-                    </select>
-                </td>
-            </tr>
             <tr>
                 <td class="label">Режим / Mode</td>
                 <td>
@@ -132,7 +124,6 @@
                 document.getElementById('firstPosition').value = data.firstPosition;
                 document.getElementById('time_begin').value = data.time_begin;
                 document.getElementById('time_end').value = data.time_end;
-                document.getElementById('timeSource').value = data.timeSource;
                 document.getElementById('currentTime').textContent = data.currentTime;
                 document.getElementById('status').textContent = data.status + ' (' + statusText(data.status) + ')';
                 document.getElementById('mode').textContent = data.enable_status == 1 ? 'Work' : 'Debug';
@@ -162,12 +153,11 @@
             const firstPos = document.getElementById('firstPosition').value;
             const tb = document.getElementById('time_begin').value;
             const te = document.getElementById('time_end').value;
-            const timeSource = document.getElementById('timeSource').value;
             const statusEl = document.getElementById('cfgStatus');
             statusEl.innerHTML = 'Saving...';
             try {
                 const params = new URLSearchParams({
-                    enable_status: enabled, timeSource,
+                    enable_status: enabled,
                     stepsPerRevolution: steps, pollInterval: poll,
                     errorLimitSteps: err, ringPauseOne: speed, ringPauseTwo: speed2, firstPosition: firstPos, time_begin: tb, time_end: te
                 });

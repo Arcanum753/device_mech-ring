@@ -15,10 +15,6 @@
 
 #include "common/TimeLib.h"
 
-#if defined(MODULE_DS3231)
-#include "module_ds3231/module_ds3231.h"
-#endif
-
 #include "device_mech-ring_types.h"
 
 void ringMechTerminalRegister();
@@ -46,7 +42,6 @@ public:
     static void cmdMode();
     static void cmdStatus();
     static void cmdTime();
-    static void cmdSource();
     static void cmdEnWeb(AsyncWebServerRequest *request);
     static void cmdSensWeb(AsyncWebServerRequest *request);
     static void cmdNWeb(AsyncWebServerRequest *request);

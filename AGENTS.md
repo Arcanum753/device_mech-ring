@@ -16,7 +16,7 @@
 - **Env:** `esp32_clock-mech_ring` (extends `env:esp32`); `src_filter` включает `module_udp`, `module_otaclient`, `device_clock-mech`, `module_ds3231`, `device_mech-ring`
 - **Только для платформы:** ESP32
 - **Зависит от модулей:** `module_udp`, `module_otaclient`, `module_ds3231`, `device_clock-mech`
-- **Зависит от ядра:** `core_web`, `core_sys`, `core_json`, `core_ntp`, `core_led`
+- **Зависит от ядра:** `core_web`, `core_sys`, `core_json`, `core_led`
 
 ## Назначение
 
@@ -29,7 +29,7 @@
 - FR-RINGMECH-1: Два режима `enable_status`; парковка (`cmdHome`), подсчёт оборотов (`cmdCount`), поворот (`cmdTurn`).
 - FR-RINGMECH-2: Отбивание часа: число ударов = текущий час, только в окне `time_begin..time_end`.
 - FR-RINGMECH-3: Паузы боя `ringPauseOne`, `ringPauseTwo`; начальное положение `firstPosition`.
-- FR-RINGMECH-4: Источник времени `timeSource` (`ds3231`/`ntp`), период `pollInterval`, лимит `errorLimitSteps`.
+- FR-RINGMECH-4: Источник времени — `core_sys.timeNow()` (подсистема виртуального времени); период `pollInterval`, лимит `errorLimitSteps`. Поле `timeSource` удалено.
 - FR-RINGMECH-5: Датчик `SENS=32` (`INPUT_PULLUP`, срабатывание по LOW), подсветка `SENS_LED=27`, STEP=17, EN=16.
 - FR-RINGMECH-6: Требует наличия `device_clock-mech` в сборке.
 - FR-RINGMECH-7: Сохранение конфига — web `handleSave` и терминал `r-save`; bus-функции `save` нет.
@@ -51,8 +51,7 @@
 ## Конфигурация
 
 `/config_ring-mech.json` — `enable_status`, `stepsPerRevolution`, `pollInterval`,
-`errorLimitSteps`, `ringPauseOne`, `ringPauseTwo`, `firstPosition`, `time_begin`, `time_end`,
-`timeSource`.
+`errorLimitSteps`, `ringPauseOne`, `ringPauseTwo`, `firstPosition`, `time_begin`, `time_end`.
 
 ## Терминальные команды
 
