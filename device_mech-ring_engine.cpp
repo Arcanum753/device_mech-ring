@@ -316,7 +316,7 @@ void CLASS_DEVICE_RINGMECH::cmdTurn() {
     if (device_mech_ring._mechTurnTarget != 0) { DBG_MOD("[D_CLOCKRING] ", "Busy: previous r-turn still running\r\n"); return; }
     if (device_mech_ring._config.enable_status == RING_MODE_WORK) { DBG_MOD("[D_CLOCKRING] ", "Blocked: WORK mode\r\n"); return; }
     char *arg = term.getNext();
-    if (arg == NULL) { DBG_MOD("[D_CLOCKRING] ", "Usage: r-turn <N>\r\n"); return; }
+    if (arg == NULL) { DBG_MOD("[D_CLOCKRING] ", "Usage: ring trn <N>\r\n"); return; }
     device_mech_ring._mechTurnTarget = (uint16_t)atoi(arg);
     if (device_mech_ring._mechTurnTarget == 0) return;
     SetTask(MechTurnNCount);
@@ -329,7 +329,7 @@ void CLASS_DEVICE_RINGMECH::cmdMode() {
         String s(arg);
         if (s == "dbg" || s == "debug")       { device_mech_ring._config.enable_status = RING_MODE_DEBUG; }
         else if (s == "work")                 { device_mech_ring._config.enable_status = RING_MODE_WORK; }
-        else { DBG_MOD("[D_CLOCKRING] ", "Usage: c-mode [dbg|work]\r\n"); return; }
+        else { DBG_MOD("[D_CLOCKRING] ", "Usage: ring mode [dbg|work]\r\n"); return; }
     }
     DBG_MOD("[D_CLOCKRING] ", "Mode: %s\r\n", device_mech_ring._config.enable_status == RING_MODE_WORK ? "WORK" : "DEBUG");
 }
@@ -371,7 +371,7 @@ void CLASS_DEVICE_RINGMECH::cmdTime() {
     uint8_t b = (uint8_t)atoi(arg1);
     if (b > 23) { DBG_MOD("[D_CLOCKRING] ", "Error: value must be 0-23\r\n"); return; }
     char *arg2 = term.getNext();
-    if (arg2 == NULL) { DBG_MOD("[D_CLOCKRING] ", "Usage: r-time <begin> <end>\r\n"); return; }
+    if (arg2 == NULL) { DBG_MOD("[D_CLOCKRING] ", "Usage: ring time <begin> <end>\r\n"); return; }
     uint8_t e = (uint8_t)atoi(arg2);
     if (e > 23) { DBG_MOD("[D_CLOCKRING] ", "Error: value must be 0-23\r\n"); return; }
     if (b > e) { DBG_MOD("[D_CLOCKRING] ", "Error: begin must be <= end\r\n"); return; }

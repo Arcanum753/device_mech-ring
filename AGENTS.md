@@ -32,7 +32,7 @@
 - FR-RINGMECH-4: Источник времени — `core_sys.timeNow()` (подсистема виртуального времени); период `pollInterval`, лимит `errorLimitSteps`. Поле `timeSource` удалено.
 - FR-RINGMECH-5: Датчик `SENS=32` (`INPUT_PULLUP`, срабатывание по LOW), подсветка `SENS_LED=27`, STEP=17, EN=16.
 - FR-RINGMECH-6: Требует наличия `device_clock-mech` в сборке.
-- FR-RINGMECH-7: Сохранение конфига — web `handleSave` и терминал `r-save`; bus-функции `save` нет.
+- FR-RINGMECH-7: Сохранение конфига — web `handleSave` и терминал `ring save`; bus-функции `save` нет.
 
 ## Аппаратные интерфейсы
 
@@ -57,7 +57,13 @@
 
 | Команда | Назначение | Доступность |
 |---------|-----------|-------------|
-| `r-*` | отладка (хоминг/поворот/датчик), `r-save` — сохранение конфига | только `DEVICE_RINGMECH` |
+| `ring show/en/sens/home/cnt/mode/trn/time/save` | отладка (хоминг/поворот/датчик), `ring save` — сохранение конфига | только `DEVICE_RINGMECH` |
+| `r-enc` … `r-time` | прежние имена, скрытые алиасы (слоты не занимают) | только `DEVICE_RINGMECH` |
+
+Регистрация — `ringMechTerminalRegister()` в `begin()`: один дескриптор
+(`component = device_mech-ring`, `name = ring`, `editable = true`) + 9 `TerminalRegisterAlias`.
+`ring mode`/`ring time` меняют состояние в памяти; на FS пишет только `ring save`
+(принцип apply/save). Справка — `ring help`.
 
 ## Слоистая структура
 

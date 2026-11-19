@@ -1,5 +1,7 @@
 #include "core_web/FSWebServerLib.h"
 
+#include <string.h>
+
 #include "core_json/core_json.h"
 
 #include "device_mech-ring.h"
@@ -29,7 +31,7 @@ void CLASS_DEVICE_RINGMECH::begin() {
     defaultConfig();
     if (loadConfig() == false) { saveConfig(); }
 
-    TerminalRegisterModule(ringMechTerminalRegister);
+    ringMechTerminalRegister();
     MechInitGPIOs();
 
     if (_config.enable_status == RING_MODE_WORK) { SetTask(MechHomeSetup); }
@@ -207,16 +209,54 @@ void CLASS_DEVICE_RINGMECH::html_ver_get(AsyncWebServerRequest *request) {
 }
 
 // ============================================================
-// Регистрация терминальных команд
+// Терминальные команды
 // ============================================================
+static const char* const kRingCommands[] = {
+    "show", "en", "sens", "home", "cnt", "mode", "trn", "time", "save", nullptr
+};
+
+static const char kRingHelp[] PROGMEM =
+    "ring - clock strike mechanism (config is saved only by 'ring save')\r\n"
+    "  ring show             status, config, sensor and pins\r\n"
+    "  ring en               toggle driver enable\r\n"
+    "  ring sens             read sensor\r\n"
+    "  ring home             home by sensor\r\n"
+    "  ring cnt              calibrate steps per revolution\r\n"
+    "  ring mode [dbg|work]  show/toggle/set mode (not saved)\r\n"
+    "  ring trn <N>          make N full turns\r\n"
+    "  ring time [<b> <e>]   show/set strike window (hours)\r\n"
+    "  ring save             persist config\r\n"
+    "  ring help             this help\r\n";
+
+static void s_ringCmd() {
+    char* sub = term.getNext();
+    if (sub == nullptr || strcmp(sub, "help") == 0) { TerminalPrintText(kRingHelp); return; }
+
+    if (strcmp(sub, "show") == 0 || strcmp(sub, "stat") == 0) { CLASS_DEVICE_RINGMECH::cmdStatus(); return; }
+    if (strcmp(sub, "en")   == 0) { CLASS_DEVICE_RINGMECH::cmdEn();     return; }
+    if (strcmp(sub, "sens") == 0) { CLASS_DEVICE_RINGMECH::cmdSens();   return; }
+    if (strcmp(sub, "home") == 0) { CLASS_DEVICE_RINGMECH::cmdHome();   return; }
+    if (strcmp(sub, "cnt")  == 0) { CLASS_DEVICE_RINGMECH::cmdCount();  return; }
+    if (strcmp(sub, "mode") == 0) { CLASS_DEVICE_RINGMECH::cmdMode();   return; }
+    if (strcmp(sub, "trn")  == 0) { CLASS_DEVICE_RINGMECH::cmdTurn();   return; }
+    if (strcmp(sub, "time") == 0) { CLASS_DEVICE_RINGMECH::cmdTime();   return; }
+    if (strcmp(sub, "save") == 0) { CLASS_DEVICE_RINGMECH::cmdSave();   return; }
+
+    DBG_MOD("[D_CLOCKRING] ", "Unknown ring subcommand '%s'. Type 'ring help'.\r\n", sub);
+}
+
 void ringMechTerminalRegister() {
-    term.addCommand("r-enc",   CLASS_DEVICE_RINGMECH::cmdEn);
-    term.addCommand("r-sens",  CLASS_DEVICE_RINGMECH::cmdSens);
-    term.addCommand("r-home",  CLASS_DEVICE_RINGMECH::cmdHome);
-    term.addCommand("r-cnt",   CLASS_DEVICE_RINGMECH::cmdCount);
-    term.addCommand("r-mode",  CLASS_DEVICE_RINGMECH::cmdMode);
-    term.addCommand("r-stat",  CLASS_DEVICE_RINGMECH::cmdStatus);
-    term.addCommand("r-save",  CLASS_DEVICE_RINGMECH::cmdSave);
-    term.addCommand("r-trn",   CLASS_DEVICE_RINGMECH::cmdTurn);
-    term.addCommand("r-time",  CLASS_DEVICE_RINGMECH::cmdTime);
+    TerminalRegisterModule("device_mech-ring", "ring", "clock strike mechanism",
+                           s_ringCmd, kRingCommands, kRingHelp, true);
+
+    // Старые имена r-* сохранены скрытыми алиасами (слоты не занимают).
+    TerminalRegisterAlias("r-enc",  CLASS_DEVICE_RINGMECH::cmdEn);
+    TerminalRegisterAlias("r-sens", CLASS_DEVICE_RINGMECH::cmdSens);
+    TerminalRegisterAlias("r-home", CLASS_DEVICE_RINGMECH::cmdHome);
+    TerminalRegisterAlias("r-cnt",  CLASS_DEVICE_RINGMECH::cmdCount);
+    TerminalRegisterAlias("r-mode", CLASS_DEVICE_RINGMECH::cmdMode);
+    TerminalRegisterAlias("r-stat", CLASS_DEVICE_RINGMECH::cmdStatus);
+    TerminalRegisterAlias("r-save", CLASS_DEVICE_RINGMECH::cmdSave);
+    TerminalRegisterAlias("r-trn",  CLASS_DEVICE_RINGMECH::cmdTurn);
+    TerminalRegisterAlias("r-time", CLASS_DEVICE_RINGMECH::cmdTime);
 }
