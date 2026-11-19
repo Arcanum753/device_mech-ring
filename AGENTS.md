@@ -61,8 +61,10 @@
 
 ## Слоистая структура
 
-Из `../../LAYERS.md`: `device_mech-ring` — часы с боем: хоминг, ротация, звонок; сейчас
-define'ы, enum'ы, `strRingMechConfig` + автомат; выделить `_types.h`, `_engine.cpp`.
+Из `../../LAYERS.md`: `device_mech-ring` — часы с боем: хоминг, ротация, звонок. Слои
+выделены: `device_mech-ring_types.h` (define'ы, enum'ы, `strRingMechConfig`),
+`device_mech-ring.cpp` (шаблонный блок), `device_mech-ring_engine.cpp` (автомат, хоминг,
+ротация, звонок).
 
 ## Зависимости модулей
 
